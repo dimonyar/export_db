@@ -1,13 +1,16 @@
+import excel
+import _mssql
 import pymssql
+import settings
 
 
-def goods_columns(server: str, port: str, database: str, user: str, password: str):
+def goods_columns():
     conn = pymssql.connect(
-        server=server,
-        port=port,
-        database=database,
-        user=user,
-        password=password,
+        server=settings.server,
+        port=settings.port,
+        database=settings.database,
+        user=settings.user,
+        password=settings.password,
         login_timeout=5,
         timeout=5)
 
@@ -29,14 +32,14 @@ def goods_columns(server: str, port: str, database: str, user: str, password: st
     return ', '.join([str(row[2] + '.' + row[3]) for row in column if row[3] != 'id'])
 
 
-def goods(server: str, port: str, database: str, user: str, password: str):
+def goods():
     try:
         conn = pymssql.connect(
-            server=server,
-            port=port,
-            database=database,
-            user=user,
-            password=password,
+            server=settings.server,
+            port=settings.port,
+            database=settings.database,
+            user=settings.user,
+            password=settings.password,
             login_timeout=5,
             timeout=5)
 
@@ -44,7 +47,7 @@ def goods(server: str, port: str, database: str, user: str, password: str):
         cursor = conn.cursor()
         query = ("""
                     SELECT
-                        """ + goods_columns(server, port, database, user, password) + """                 
+                        """ + goods_columns() + """                 
                     FROM
                         dbo.Barcode                 
                     JOIN
@@ -64,5 +67,59 @@ def goods(server: str, port: str, database: str, user: str, password: str):
             print("connection close failed")
         return good
 
+    except pymssql.Error:
+        print("connection failed")
+
+
+def insert_into(table: str):
+    try:
+        conn = pymssql.connect(
+            server=settings.server,
+            port=settings.port,
+            database=settings.database,
+            user=settings.user,
+            password=settings.password,
+            login_timeout=5,
+            timeout=5)
+
+        cursor = conn.cursor()
+        print("connection open")
+        query = (excel.values(table))
+        # print(query)
+        cursor.execute(query)
+        print('\n Insert values into')
+        conn.commit()
+        try:
+            conn.close()
+            print('connection close')
+        except pymssql.Error:
+            print("connection close failed")
+    except pymssql.Error as e:
+        print(e.__context__)
+
+
+def delete_table(table: str):
+    try:
+        conn = pymssql.connect(
+            server=settings.server,
+            port=settings.port,
+            database=settings.database,
+            user=settings.user,
+            password=settings.password,
+            login_timeout=5,
+            timeout=5)
+
+        cursor = conn.cursor()
+        print("connection open")
+        query = ("""DELETE FROM """ + table)
+        print(query)
+        cursor.execute(query)
+        print('Delete values from table', table)
+        conn.commit()
+        try:
+            conn.close()
+            print('connection close')
+        except pymssql.Error:
+            print("connection close failed")
     except pymssql.Error:
         print("connection failed")
