@@ -1,23 +1,18 @@
-import excel
-import sql_query
-import variables
-from txt import file_output
+from sqlclasstable import Good
+from flask import Flask
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from settings import server, port, user, password, database
 
-export_import = int(input("Press 1 if want export data SQL to xlsx and txt \n or"
-                          " \n Press 2 for import xlsx to SQL :\n"))
+app = Flask(__name__)
 
-if export_import == 1:
-    goods = sql_query.goods()
-    excel.good(path=variables.path, file=variables.xlsfile, goods=goods)
-elif export_import == 2:
-    sql_query.delete_table('Barcode')
-    sql_query.delete_table('Good')
-    sql_query.insert_into('Good')
-    sql_query.insert_into('Barcode')
+engine = create_engine(f'mssql+pymssql://{user}:{password}@{server}:{port}/{database}', echo=True)
 
+session = sessionmaker(bind=engine)
+s = session()
 
-# file_output(path=variables.path, file=variables.txtfile, goods=goods)
+for row in s.query(Good.Name):
+    print(row[0])
 
-
-
-
+# @app.route('/')
+# def requirements():

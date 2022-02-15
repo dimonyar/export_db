@@ -52,9 +52,10 @@ def values(table: str):
                     val.append(str(row[i]).replace("'", "’"))
                 else:
                     val.append(row[i])
-        if 'INSERT INTO ' + table + '(' + columns_name + ') VALUES' + str(tuple(val)) not in value:
-            bar.next()
-            value.append('INSERT INTO ' + table + '(' + columns_name + ') VALUES' + str(tuple(val)))
-        else:
-            continue
+        if len(value) < 17100:
+            if 'INSERT INTO ' + table + '(' + columns_name + ') VALUES' + str(tuple(val)) not in value:
+                bar.next()
+                value.append('INSERT INTO ' + table + '(' + columns_name + ') VALUES' + str(tuple(val)))
+            else:
+                continue
     return '; '.join(value).replace('nan', 'NULL')
