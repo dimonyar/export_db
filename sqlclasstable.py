@@ -66,6 +66,7 @@ class Partners(Base):
     Field_2 = Column(String(50), nullable=True)
     Discount = Column(Float, nullable=False)
     Updated = Column(BIT, nullable=False)
+    DocHead = relationship("DocHead")
 
 
 class User(Base):
@@ -94,6 +95,7 @@ class Stores(Base):
     Field_2 = Column(String(50), nullable=True)
     Updated = Column(BIT, nullable=False)
     PriceAndRemains = relationship("PriceAndRemains")
+    DocHead = relationship("DocHead")
 
 
 class Cell(Base):
@@ -197,8 +199,8 @@ class DocHead(Base):
     Comment = Column(String(50), nullable=True)
     CreateDate = Column(BigInteger, nullable=False)
     DocStatus = Column(SMALLINT, nullable=False)
-    PartnerF = Column(String(50), nullable=True)
-    MainStoreF = Column(String(50), nullable=True)
+    PartnerF = Column(String(50), ForeignKey('Partners.PartnerF'), nullable=True)
+    MainStoreF = Column(String(50), ForeignKey('Stores.StoreF'), nullable=True)
     AlternateStoreF = Column(String(50), nullable=True)
     DocType = Column(SMALLINT, nullable=True)
     UserF = Column(BigInteger, nullable=False)
